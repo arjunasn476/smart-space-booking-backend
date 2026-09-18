@@ -1,0 +1,13 @@
+node_modules/
+.env
+dist/
+*.log
+npm-debug.log*
+
+# keep folder structure but ignore uploaded files themselves
+uploads/general/*
+uploads/spaces/*
+uploads/members/*
+!uploads/general/.gitkeep
+!uploads/spaces/.gitkeep
+!uploads/members/.gitkeep

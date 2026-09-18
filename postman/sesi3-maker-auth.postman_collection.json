@@ -1,0 +1,174 @@
+{
+  "info": {
+    "name": "Smart Space Booking - Sesi 3 (Maker + Auth)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000"
+    },
+    {
+      "key": "appKey",
+      "value": ""
+    },
+    {
+      "key": "memberToken",
+      "value": ""
+    },
+    {
+      "key": "adminToken",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Maker - Register",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/maker/register",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Budi Santoso\",\n  \"username\": \"budisantoso\",\n  \"email\": \"budi@smk.sch.id\",\n  \"password\": \"Password123!\"\n}"
+        }
+      }
+    },
+    {
+      "name": "2. Maker - Login",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/maker/login",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"usernameOrEmail\": \"budisantoso\",\n  \"password\": \"Password123!\"\n}"
+        }
+      }
+    },
+    {
+      "name": "3. Maker - Me",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{makerToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/maker/me"
+      }
+    },
+    {
+      "name": "4. Maker - Stats",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "x-maker-key",
+            "value": "{{appKey}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/maker/stats"
+      }
+    },
+    {
+      "name": "5. Maker - List (penguji)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/api/maker/list"
+      }
+    },
+    {
+      "name": "6. Auth - Register Member",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "x-maker-key",
+            "value": "{{appKey}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/auth/register/member",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"johndoe\",\n  \"password\": \"Secret123!\",\n  \"nama_member\": \"John Doe\",\n  \"instansi\": \"Universitas Indonesia\",\n  \"alamat\": \"Jl. Sudirman No. 123, Jakarta\",\n  \"telp\": \"081234567890\"\n}"
+        }
+      }
+    },
+    {
+      "name": "7. Auth - Register Admin Space",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "x-maker-key",
+            "value": "{{appKey}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/auth/register/admin-space",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"admin_space1\",\n  \"password\": \"Admin123!\",\n  \"nama_coworking\": \"Moklet Hub Coworking\",\n  \"nama_pemilik\": \"Ahmad Bidin\",\n  \"telp\": \"081298765432\"\n}"
+        }
+      }
+    },
+    {
+      "name": "8. Auth - Login (Member atau Admin)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "x-maker-key",
+            "value": "{{appKey}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/auth/login",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"johndoe\",\n  \"password\": \"Secret123!\"\n}"
+        }
+      }
+    },
+    {
+      "name": "9. Auth - Profile",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{memberToken}}"
+          },
+          {
+            "key": "x-maker-key",
+            "value": "{{appKey}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/auth/profile"
+      }
+    }
+  ]
+}
