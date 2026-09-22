@@ -23,16 +23,30 @@ const list = asyncHandler(async (req, res) => {
   if (id_space) where.idSpace = parseId(id_space, 'id_space');
 
   // A specific date wins over month/year when both are supplied.
+  // month/year are independent filters here (unlike myHistory/reports,
+  // which always represent exactly one month) — each combination below
+  // is handled explicitly instead of silently defaulting the missing
+  // one to "now", which used to make "?year=2026" alone secretly only
+  // return the current month instead of the whole year.
   if (tanggal) {
     where.tanggalReservasi = new Date(tanggal);
-  } else if (month || year) {
-    const now = new Date();
-    const m = month ? parseInt(month, 10) : now.getMonth() + 1;
-    const y = year ? parseInt(year, 10) : now.getFullYear();
+  } else if (month && year) {
+    const m = parseInt(month, 10);
+    const y = parseInt(year, 10);
     if (!Number.isInteger(m) || m < 1 || m > 12) {
       throw new AppError(400, 'Parameter month harus antara 1-12!', 'Bad Request');
     }
     where.tanggalReservasi = { gte: new Date(Date.UTC(y, m - 1, 1)), lt: new Date(Date.UTC(y, m, 1)) };
+  } else if (month && !year) {
+    const m = parseInt(month, 10);
+    if (!Number.isInteger(m) || m < 1 || m > 12) {
+      throw new AppError(400, 'Parameter month harus antara 1-12!', 'Bad Request');
+    }
+    const y = new Date().getUTCFullYear();
+    where.tanggalReservasi = { gte: new Date(Date.UTC(y, m - 1, 1)), lt: new Date(Date.UTC(y, m, 1)) };
+  } else if (year && !month) {
+    const y = parseInt(year, 10);
+    where.tanggalReservasi = { gte: new Date(Date.UTC(y, 0, 1)), lt: new Date(Date.UTC(y + 1, 0, 1)) };
   }
 
   const rows = await prisma.reservasi.findMany({
