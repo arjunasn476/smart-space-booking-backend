@@ -5,7 +5,7 @@ const { success } = require('../../utils/response');
 const { AppError } = require('../../utils/AppError');
 const asyncHandler = require('../../utils/asyncHandler');
 const parseId = require('../../utils/parseId');
-const { addHoursToTime, isOverlap, formatTime } = require('../../utils/dateTime');
+const { addHoursToTime, isOverlap, formatTime, crossesMidnight } = require('../../utils/dateTime');
 const {
   generateKodeBooking,
   generateETicketNumber,
@@ -28,6 +28,9 @@ const create = asyncHandler(async (req, res) => {
   const space = await prisma.space.findFirst({ where: { id: BigInt(id_space), makerId } });
   if (!space) throw new AppError(404, 'Space dengan ID tersebut tidak ditemukan!', 'Not Found');
 
+    if (crossesMidnight(jam_mulai, durasi_jam)) {
+    throw new AppError(400, 'Reservasi tidak boleh melewati tengah malam (00:00)! Pilih jam_mulai atau durasi_jam yang lebih pendek.', 'Bad Request');
+  }
   const jamSelesai = addHoursToTime(jam_mulai, durasi_jam);
   const tanggalDate = new Date(tanggal_reservasi);
 

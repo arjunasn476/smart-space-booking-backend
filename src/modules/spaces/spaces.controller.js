@@ -5,7 +5,7 @@ const { success } = require('../../utils/response');
 const { AppError } = require('../../utils/AppError');
 const asyncHandler = require('../../utils/asyncHandler');
 const parseId = require('../../utils/parseId');
-const { addHoursToTime, isOverlap, formatTime } = require('../../utils/dateTime');
+const { addHoursToTime, isOverlap, formatTime, crossesMidnight } = require('../../utils/dateTime');
 const { buildFotoUrl } = require('../../utils/fotoUrl');
 
 const SPACE_TYPES = [
@@ -28,9 +28,12 @@ const availability = asyncHandler(async (req, res) => {
   const space = await prisma.space.findFirst({ where: { id: spaceId, makerId } });
   if (!space) throw new AppError(404, 'Space dengan ID tersebut tidak ditemukan!', 'Not Found');
 
-  const durasi = parseInt(durasi_jam, 10);
+    const durasi = parseInt(durasi_jam, 10);
   if (!Number.isInteger(durasi) || durasi < 1) {
     throw new AppError(400, 'durasi_jam harus berupa bilangan bulat minimal 1!', 'Bad Request');
+  }
+  if (crossesMidnight(jam_mulai, durasi)) {
+    throw new AppError(400, 'Reservasi tidak boleh melewati tengah malam (00:00)! Pilih jam_mulai atau durasi_jam yang lebih pendek.', 'Bad Request');
   }
   const jamSelesai = addHoursToTime(jam_mulai, durasi);
 
