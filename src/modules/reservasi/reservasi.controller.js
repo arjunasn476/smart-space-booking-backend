@@ -28,11 +28,22 @@ const create = asyncHandler(async (req, res) => {
   const space = await prisma.space.findFirst({ where: { id: BigInt(id_space), makerId } });
   if (!space) throw new AppError(404, 'Space dengan ID tersebut tidak ditemukan!', 'Not Found');
 
-    if (crossesMidnight(jam_mulai, durasi_jam)) {
+  // Validasi tanggal reservasi tidak boleh di masa lalu
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const tanggalDate = new Date(tanggal_reservasi);
+  const targetDate = new Date(tanggal_reservasi);
+  targetDate.setHours(0, 0, 0, 0);
+
+  if (targetDate < today) {
+    throw new AppError(400, 'Tanggal reservasi tidak boleh di masa lalu!', 'Bad Request');
+  }
+
+  if (crossesMidnight(jam_mulai, durasi_jam)) {
     throw new AppError(400, 'Reservasi tidak boleh melewati tengah malam (00:00)! Pilih jam_mulai atau durasi_jam yang lebih pendek.', 'Bad Request');
   }
   const jamSelesai = addHoursToTime(jam_mulai, durasi_jam);
-  const tanggalDate = new Date(tanggal_reservasi);
 
   // Overlap check — a range comparison, so it must live here at the
   // application layer (no plain DB unique index can express it).
